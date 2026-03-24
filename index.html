@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -474,8 +475,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
         <div class="section-label" style="margin-top:6px">Photo / screenshot (optional)</div>
         <div class="photo-zone" onclick="document.getElementById('photo-input').click()">
           <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M9 5l1.5-2h3L15 5"/></svg>
-          <div style="font-size:13px;color:var(--muted)">Add a photo of your setup or swing</div>
-          <div style="font-size:11px;color:var(--hint);margin-top:3px">Tap to choose from camera roll</div>
+          <div style="font-size:13px;color:var(--muted)">Upload a swing frame or setup photo</div>
+          <div style="font-size:11px;color:var(--hint);margin-top:3px">Screenshot a key frame from your video — address, top, impact, or follow-through</div>
         </div>
         <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(this)">
         <img id="photo-preview" class="photo-preview">
@@ -721,7 +722,7 @@ async function runAnalysis() {
   const photoEl = document.getElementById('photo-preview');
   const hasPhoto = photoEl.style.display !== 'none' && photoEl.src;
 
-  const prompt = buildAnalysisPrompt(selectedClub, misses, desc);
+  const prompt = buildAnalysisPrompt(selectedClub, misses, desc, !!hasPhoto);
 
   try {
     let messages;
@@ -741,7 +742,7 @@ async function runAnalysis() {
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages })
     });
 
@@ -772,37 +773,36 @@ async function runAnalysis() {
   }
 }
 
-function buildAnalysisPrompt(club, misses, desc) {
-  return `You are an expert PGA-level golf instructor. Analyze this golfer's swing and provide detailed coaching.
+function buildAnalysisPrompt(club, misses, desc, hasPhoto) {
+  const photoBlock = hasPhoto
+    ? `\nIMAGE ANALYSIS — a swing photo is attached. This is your PRIMARY evidence source.\nCarefully examine and report on everything visible:\n- GRIP: hand position, V directions, strong/weak/neutral\n- STANCE: foot width, ball position, knee flex\n- POSTURE: spine angle, hip hinge vs waist bend, chin position\n- ALIGNMENT: shoulder/hip/foot lines — open, closed, or square\n- SWING POSITION: identify which position is shown (address, takeaway, halfway, top, transition, impact, follow-through) then assess:\n    * Club face angle and shaft plane\n    * Lead arm straightness, wrist position (cupped/bowed/flat)\n    * Hip and shoulder rotation and separation amount\n    * Head movement from original address position\n    * Trail elbow — flying or tucked\n    * Weight shift and foot pressure\nBe specific: cite actual body parts and angles you SEE. Prioritize visual evidence over the text description.`
+    : '';
 
-CLUB: ${club}
-TYPICAL MISSES: ${misses.length ? misses.join(', ') : 'Not specified'}
-GOLFER'S DESCRIPTION: ${desc || 'No description provided'}
+  return \`You are an expert PGA-level golf instructor delivering precise, actionable swing coaching.
 
-Respond ONLY with valid JSON in this exact format (no markdown, no text outside JSON):
+CLUB: \${club}
+TYPICAL MISSES: \${misses.length ? misses.join(', ') : 'Not specified'}
+GOLFER DESCRIPTION: \${desc || 'None provided'}\${photoBlock}
+
+Respond ONLY with a valid JSON object. No markdown, no text outside the JSON.
 {
   "score": <integer 0-100>,
-  "summary": "<2-3 sentence overall assessment>",
+  "summary": "<2-3 sentences — if photo provided, reference specific things you observed>",
+  "imagePosition": "<if photo: name the swing position shown e.g. Address / Top of Backswing / Impact — omit key if no photo>",
   "issues": [
     {
       "severity": "red|amber|green",
-      "title": "<short issue name>",
-      "diagnosis": "<2-3 sentence diagnosis explaining the fault and its impact>",
-      "fix": "<2-3 sentence fix describing what to change and how to feel it>",
-      "drills": ["<drill 1>", "<drill 2>", "<drill 3>"]
+      "title": "<concise issue name>",
+      "diagnosis": "<2-3 sentences — if photo, cite visuals e.g. your lead wrist appears cupped, your hips are open at impact>",
+      "fix": "<2-3 sentences on the correction and how it should feel>",
+      "drills": ["<drill with reps>", "<drill with reps>", "<drill with reps>"]
     }
   ],
-  "strengths": ["<strength 1>", "<strength 2>"],
-  "keyThought": "<one simple swing thought to take to the range>"
+  "strengths": ["<specific strength>", "<specific strength>"],
+  "keyThought": "<one swing thought to take to the range>"
 }
 
-Rules:
-- red = major fault causing significant distance/accuracy loss
-- amber = moderate fault limiting consistency
-- green = minor issue or area to refine
-- Include 3-5 issues total
-- Be specific to the club and miss patterns described
-- Drills should be named, practical things to do at the range or at home`;
+red = major fault killing distance or accuracy. amber = moderate, limits consistency. green = minor refinement. Include 3-5 issues total. If a photo was provided, lead from visual evidence first.\`;
 }
 
 function parseAnalysis(text) {
@@ -837,7 +837,7 @@ function renderAnalysisResults(parsed, club) {
         <text x="30" y="37" text-anchor="middle" font-size="9" fill="var(--hint)" font-family="DM Sans,sans-serif">/100</text>
       </svg>
       <div>
-        <div class="score-title">${club} — Swing Score</div>
+        <div class="score-title">${parsed.imagePosition ? parsed.imagePosition + ' — ' : ''}${club} Swing Analysis</div>
         <div class="score-summary">${parsed.summary || ''}</div>
         ${parsed.keyThought ? `<div style="margin-top:7px;font-size:12px;background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.2);border-radius:6px;padding:6px 10px;color:var(--amber)">💭 ${parsed.keyThought}</div>` : ''}
       </div>
@@ -927,7 +927,7 @@ Rules:
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
     });
 
