@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)file:///Users/davidrush/Downloads/index_2.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SwingCoach">
+<meta name="theme-color" content="#0a1a0f">
+<link rel="manifest" href="file:///Users/davidrush/Downloads/manifest.json">
+<link rel="apple-touch-icon" href="file:///Users/davidrush/Downloads/icons/icon-192.png">
+<title>SwingCoach AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./SwingCoach AI_files/css2" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#1D9E75;--green2:#0F6E56;--green3:#085041;--green-l:#E1F5EE;--green-ll:#9FE1CB;
+  --amber:#EF9F27;--amber-l:#FAEEDA;--amber-d:#633806;
+  --red:#E24B4A;--red-l:#FCEBEB;
+  --bg:#0a1a0f;--surface:#0f2318;--card:#152b1e;--card2:#1a3326;
+  --border:rgba(29,158,117,0.18);--border2:rgba(29,158,117,0.32);
+  --text:#e8f5f0;--muted:#7aab94;--hint:#4d7a66;
+  --radius:14px;--radius-sm:9px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+
+/* STATUS BAR */
+.status-bar{
+  background:var(--bg);
+  padding:calc(var(--safe-top) + 6px) 20px 6px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:500;color:var(--muted);flex-shrink:0;
+}
+.status-signal{display:flex;gap:3px;align-items:flex-end}
+.status-signal span{background:var(--muted);border-radius:1px;width:3px}
+.status-signal span:nth-child(1){height:4px}
+.status-signal span:nth-child(2){height:7px}
+.status-signal span:nth-child(3){height:10px}
+.status-signal span:nth-child(4){height:13px}
+
+/* HEADER */
+.app-header{
+  padding:10px 20px 14px;
+  background:var(--bg);
+  border-bottom:0.5px solid var(--border);
+  flex-shrink:0;
+}
+.header-row{display:flex;align-items:flex-end;justify-content:space-between}
+.app-logo{display:flex;align-items:center;gap:8px}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--green);display:flex;align-items:center;justify-content:center;
+}
+.logo-mark svg{width:20px;height:20px;fill:none;stroke:white;stroke-width:2}
+.app-name{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);letter-spacing:-0.5px}
+.api-badge{
+  font-size:10px;font-weight:500;background:var(--card2);
+  border:0.5px solid var(--border2);border-radius:20px;
+  padding:3px 9px;color:var(--green-ll);
+}
+
+/* API KEY SETUP */
+.api-key-bar{
+  display:flex;gap:8px;align-items:center;
+  padding:10px 20px;
+  background:var(--surface);
+  border-bottom:0.5px solid var(--border);
+  flex-shrink:0;
+}
+.api-key-bar input{
+  flex:1;background:var(--card);border:0.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:8px 12px;
+  font-size:12px;font-family:'DM Sans',sans-serif;
+  color:var(--text);outline:none;
+}
+.api-key-bar input::placeholder{color:var(--hint)}
+.api-key-bar input:focus{border-color:var(--green)}
+.btn-sm{
+  background:var(--green);color:white;border:none;
+  border-radius:var(--radius-sm);padding:8px 14px;
+  font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.btn-sm:active{opacity:0.8}
+.key-status{font-size:11px;color:var(--green);font-weight:500;white-space:nowrap}
+.key-status.bad{color:var(--red)}
+
+/* TABS */
+.tab-bar{
+  display:flex;background:var(--bg);
+  border-bottom:0.5px solid var(--border);flex-shrink:0;
+}
+.tab{
+  flex:1;padding:11px 4px;font-size:11px;font-weight:500;
+  text-align:center;cursor:pointer;color:var(--hint);
+  border-bottom:2px solid transparent;transition:all 0.2s;
+  letter-spacing:0.3px;
+}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* SCROLL AREA */
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;
+  padding:16px 16px calc(16px + var(--safe-bot));
+  display:none;
+}
+.screen.active{display:block}
+.screen::-webkit-scrollbar{display:none}
+
+/* CARDS */
+.card{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px;
+}
+.card2{background:var(--card2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px}
+
+/* SECTION LABEL */
+.section-label{
+  font-size:11px;font-weight:500;color:var(--hint);
+  text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;
+}
+
+/* CLUB PICKER */
+.club-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.club-btn{
+  padding:9px 4px;border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--card2);font-size:12px;font-weight:500;cursor:pointer;
+  text-align:center;transition:all 0.15s;color:var(--muted);
+}
+.club-btn.active{border-color:var(--green);background:rgba(29,158,117,0.15);color:var(--green)}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{
+  padding:6px 12px;border:0.5px solid var(--border);border-radius:20px;
+  font-size:12px;cursor:pointer;background:var(--card2);
+  transition:all 0.15s;color:var(--muted);
+}
+.chip.active{border-color:var(--green);background:rgba(29,158,117,0.12);color:var(--green-ll)}
+
+/* TEXTAREA */
+.swing-textarea{
+  width:100%;background:var(--card2);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);
+  outline:none;resize:none;min-height:120px;line-height:1.6;
+  margin-bottom:6px;
+}
+.swing-textarea::placeholder{color:var(--hint)}
+.swing-textarea:focus{border-color:var(--border2)}
+
+/* PHOTO UPLOAD */
+.photo-zone{
+  border:1.5px dashed var(--border2);border-radius:var(--radius);
+  padding:20px;text-align:center;cursor:pointer;
+  background:var(--card2);margin-bottom:12px;
+  transition:all 0.2s;
+}
+.photo-zone:active{border-color:var(--green);background:rgba(29,158,117,0.08)}
+.photo-zone svg{width:28px;height:28px;stroke:var(--green);fill:none;stroke-width:1.5;margin:0 auto 8px;display:block}
+.photo-preview{width:100%;border-radius:var(--radius-sm);max-height:200px;object-fit:cover;margin-bottom:10px;display:none}
+
+/* BIG BUTTON */
+.analyze-btn{
+  width:100%;padding:15px;background:var(--green);color:white;
+  border:none;border-radius:var(--radius);
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;letter-spacing:0.2px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.analyze-btn:active{background:var(--green2)}
+.analyze-btn:disabled{opacity:0.4;cursor:not-allowed}
+.analyze-btn svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2}
+
+/* LOADING */
+.loading-wrap{text-align:center;padding:40px 20px}
+.spinner{
+  width:44px;height:44px;border:2.5px solid var(--card2);
+  border-top-color:var(--green);border-radius:50%;
+  margin:0 auto 16px;animation:spin 0.75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{font-size:14px;color:var(--muted)}
+.loading-sub{font-size:12px;color:var(--hint);margin-top:6px}
+
+/* SCORE RING */
+.score-banner{
+  background:rgba(29,158,117,0.1);border:0.5px solid var(--border2);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  display:flex;align-items:center;gap:14px;
+}
+.score-ring svg{width:60px;height:60px;flex-shrink:0}
+.score-title{font-size:11px;color:var(--green);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+.score-summary{font-size:13px;color:var(--text);line-height:1.5}
+
+/* ANALYSIS CARDS */
+.issue-card{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:var(--radius);margin-bottom:10px;overflow:hidden;
+}
+.issue-header{
+  display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;
+}
+.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sev-red{background:var(--red)}
+.sev-amber{background:var(--amber)}
+.sev-green{background:var(--green)}
+.issue-title{font-size:14px;font-weight:500;flex:1;color:var(--text)}
+.chevron{width:16px;height:16px;stroke:var(--hint);fill:none;stroke-width:2;flex-shrink:0;transition:transform 0.2s}
+.issue-card.open .chevron{transform:rotate(180deg)}
+.issue-body{
+  display:none;padding:0 14px 14px;
+  border-top:0.5px solid var(--border);
+}
+.issue-card.open .issue-body{display:block}
+.issue-text{font-size:13px;color:var(--muted);line-height:1.65;margin-top:11px}
+.drill-tag{
+  display:inline-block;background:var(--amber-l);color:var(--amber-d);
+  border-radius:4px;font-size:11px;font-weight:500;
+  padding:3px 8px;margin:6px 4px 0 0;
+}
+.drill-tag-dark{
+  display:inline-block;background:rgba(239,159,39,0.15);color:var(--amber);
+  border-radius:4px;font-size:11px;font-weight:500;
+  padding:3px 8px;margin:6px 4px 0 0;
+}
+
+/* STREAMING TEXT */
+.streaming-card{
+  background:var(--card);border:0.5px solid var(--border2);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px;
+}
+.streaming-content{
+  font-size:14px;color:var(--text);line-height:1.7;
+  white-space:pre-wrap;word-wrap:break-word;
+}
+.cursor-blink{
+  display:inline-block;width:2px;height:14px;background:var(--green);
+  margin-left:2px;vertical-align:middle;animation:blink 1s step-end infinite;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* PRACTICE */
+.plan-header{margin-bottom:16px}
+.plan-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px}
+.plan-sub{font-size:12px;color:var(--muted)}
+.day-card{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:var(--radius);margin-bottom:10px;overflow:hidden;
+}
+.day-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;cursor:pointer;
+}
+.day-left{display:flex;align-items:center;gap:10px}
+.day-badge{
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  background:rgba(29,158,117,0.15);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:500;color:var(--green);flex-shrink:0;
+}
+.day-name{font-size:14px;font-weight:500}
+.day-time{font-size:12px;color:var(--hint)}
+.day-body{display:none;padding:0 14px 14px;border-top:0.5px solid var(--border)}
+.day-card.open .day-body{display:block}
+.day-card.open .chevron{transform:rotate(180deg)}
+.drill-row{
+  display:flex;gap:10px;padding:10px 0;
+  border-bottom:0.5px solid var(--border);
+}
+.drill-row:last-of-type{border-bottom:none}
+.drill-num{
+  width:20px;height:20px;border-radius:50%;background:var(--card2);
+  font-size:11px;font-weight:500;color:var(--hint);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.drill-name{font-size:13px;font-weight:500;margin-bottom:3px;color:var(--text)}
+.drill-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.tip-box{
+  background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.25);
+  border-radius:var(--radius-sm);padding:11px;margin-top:10px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.tip-icon{font-size:13px;flex-shrink:0}
+.tip-text{font-size:12px;color:var(--amber);line-height:1.5}
+
+/* PROGRESS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-box{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px}
+.stat-val{font-size:26px;font-weight:500;color:var(--green)}
+.stat-label{font-size:11px;color:var(--hint);margin-top:3px}
+.metric-item{margin-bottom:12px}
+.metric-row{display:flex;justify-content:space-between;margin-bottom:5px}
+.metric-name{font-size:13px;color:var(--text)}
+.metric-num{font-size:13px;font-weight:500;color:var(--muted)}
+.bar-track{height:5px;background:var(--card2);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bar-green{background:var(--green)}
+.bar-amber{background:var(--amber)}
+.bar-red{background:var(--red)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px}
+.empty-icon{width:56px;height:56px;margin:0 auto 14px;opacity:0.4}
+.empty-icon svg{width:56px;height:56px;stroke:var(--green);fill:none;stroke-width:1}
+.empty-title{font-size:16px;font-weight:500;margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--hint);line-height:1.5}
+
+/* TIPS ROW */
+.tips-row{
+  display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;
+  padding-bottom:4px;scrollbar-width:none;
+}
+.tips-row::-webkit-scrollbar{display:none}
+.tip-pill{
+  background:var(--card2);border:0.5px solid var(--border);
+  border-radius:20px;padding:7px 13px;white-space:nowrap;
+  font-size:12px;color:var(--muted);cursor:pointer;flex-shrink:0;
+}
+.tip-pill:active{background:var(--card);color:var(--green)}
+
+/* NOTICE */
+.notice{
+  background:rgba(239,159,39,0.08);border:0.5px solid rgba(239,159,39,0.2);
+  border-radius:var(--radius-sm);padding:10px 12px;
+  font-size:12px;color:var(--amber);line-height:1.5;margin-bottom:12px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  display:flex;background:var(--bg);
+  border-top:0.5px solid var(--border);
+  padding:10px 0 calc(10px + var(--safe-bot));
+  flex-shrink:0;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;padding:4px;
+  color:var(--hint);transition:color 0.15s;
+}
+.nav-item.active{color:var(--green)}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5}
+.nav-item span{font-size:10px;font-weight:500}
+
+.history-item{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+}
+.history-score{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:500;flex-shrink:0;
+}
+.h-green{background:rgba(29,158,117,0.15);color:var(--green)}
+.h-amber{background:rgba(239,159,39,0.15);color:var(--amber)}
+.history-info{flex:1}
+.history-title{font-size:13px;font-weight:500}
+.history-sub{font-size:12px;color:var(--hint);margin-top:2px}
+.history-arrow{stroke:var(--hint);fill:none}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(5,13,8,0.85);
+  display:flex;align-items:flex-end;justify-content:center;
+  z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{
+  width:100%;max-width:430px;background:var(--surface);
+  border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);
+  padding:20px 20px calc(20px + var(--safe-bot));
+  transform:translateY(100%);transition:transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--hint);border-radius:2px;margin:0 auto 18px}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span id="clock">9:41</span>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="status-signal"><span></span><span></span><span></span><span></span></div>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--muted)"><rect x="0" y="2" width="12" height="9" rx="2" fill="none" stroke="var(--muted)" stroke-width="1.2"></rect><rect x="1" y="3" width="7" height="7" rx="1" fill="var(--green)"></rect><rect x="13" y="4" width="2" height="5" rx="1" fill="var(--muted)"></rect></svg>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="header-row">
+      <div class="app-logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+        </div>
+        <span class="app-name">SwingCoach</span>
+      </div>
+      <span class="api-badge">AI Powered</span>
+    </div>
+  </div>
+
+  <!-- API KEY BAR -->
+  <div class="api-key-bar" id="api-key-bar">
+    <input type="password" id="api-key-input" placeholder="Paste your Anthropic API key (sk-ant-...)" autocomplete="off">
+    <button class="btn-sm" onclick="saveKey()">Save</button>
+    <span class="key-status" id="key-status" style="display:none"></span>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(&#39;analyze&#39;)">Analyze</div>
+    <div class="tab" onclick="switchTab(&#39;practice&#39;)">Practice</div>
+    <div class="tab" onclick="switchTab(&#39;history&#39;)">History</div>
+    <div class="tab" onclick="switchTab(&#39;settings&#39;)">Settings</div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens">
+
+    <!-- ANALYZE -->
+    <div class="screen active" id="tab-analyze">
+      <div id="analyze-form">
+        <div class="notice">
+          💡 Describe your swing in as much detail as you can — ball flight, misses, feelings in your body. The more detail, the better your AI coaching.
+        </div>
+
+        <div class="section-label">Club</div>
+        <div class="club-grid" id="club-grid">
+          <div class="club-btn active" onclick="pickClub(this,&#39;Driver&#39;)">Driver</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;3-wood&#39;)">3-wood</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;Hybrid&#39;)">Hybrid</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;3-iron&#39;)">3-iron</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;5-iron&#39;)">5-iron</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;7-iron&#39;)">7-iron</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;9-iron&#39;)">9-iron</div>
+          <div class="club-btn" onclick="pickClub(this,&#39;Wedge&#39;)">Wedge</div>
+        </div>
+
+        <div class="section-label">Typical miss / ball flight</div>
+        <div class="chips" id="miss-chips">
+          <div class="chip" onclick="toggleChip(this)">Slice</div>
+          <div class="chip" onclick="toggleChip(this)">Hook</div>
+          <div class="chip" onclick="toggleChip(this)">Pull</div>
+          <div class="chip" onclick="toggleChip(this)">Push</div>
+          <div class="chip" onclick="toggleChip(this)">Fat</div>
+          <div class="chip" onclick="toggleChip(this)">Thin</div>
+          <div class="chip" onclick="toggleChip(this)">High/weak</div>
+          <div class="chip" onclick="toggleChip(this)">Low/stinger</div>
+          <div class="chip" onclick="toggleChip(this)">Loss of distance</div>
+          <div class="chip" onclick="toggleChip(this)">Inconsistent</div>
+        </div>
+
+        <div class="section-label">Describe your swing &amp; issues</div>
+        <div class="tips-row">
+          <div class="tip-pill" onclick="appendTip(&#39;I feel like I\&#39;m coming over the top.&#39;)">Over the top</div>
+          <div class="tip-pill" onclick="appendTip(&#39;My hips slide instead of rotate.&#39;)">Hip slide</div>
+          <div class="tip-pill" onclick="appendTip(&#39;I lose my posture through impact.&#39;)">Posture loss</div>
+          <div class="tip-pill" onclick="appendTip(&#39;My grip feels weak/loose.&#39;)">Weak grip</div>
+          <div class="tip-pill" onclick="appendTip(&#39;I chicken-wing my lead arm at impact.&#39;)">Chicken wing</div>
+          <div class="tip-pill" onclick="appendTip(&#39;My takeaway is too inside/outside.&#39;)">Takeaway</div>
+          <div class="tip-pill" onclick="appendTip(&#39;I cast the club early from the top.&#39;)">Early cast</div>
+        </div>
+        <textarea class="swing-textarea" id="swing-desc" placeholder="Example: With my driver I hit mostly slices that start slightly left and curve hard right. I feel like I&#39;m swinging too far from outside to in. My misses are either a big slice or a big pull-hook. I sometimes hit it fat with my irons too..." rows="5"></textarea>
+
+        <div class="section-label" style="margin-top:6px">Photo / screenshot (optional)</div>
+        <div class="photo-zone" onclick="document.getElementById(&#39;photo-input&#39;).click()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="12" cy="12" r="3"></circle><path d="M9 5l1.5-2h3L15 5"></path></svg>
+          <div style="font-size:13px;color:var(--muted)">Upload a swing frame or setup photo</div>
+          <div style="font-size:11px;color:var(--hint);margin-top:3px">Screenshot a key frame from your video — address, top, impact, or follow-through</div>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        <img id="photo-preview" class="photo-preview">
+
+        <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+          Analyze My Swing
+        </button>
+      </div>
+
+      <div id="analyze-loading" style="display:none">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="loading-msg">Your AI coach is analyzing...</div>
+          <div class="loading-sub" id="loading-sub">Reading your swing description</div>
+        </div>
+      </div>
+
+      <div id="analyze-results" style="display:none">
+        <div id="score-banner-wrap"></div>
+        <div id="issue-cards"></div>
+        <button class="analyze-btn" onclick="buildPracticePlan()" id="build-plan-btn" style="margin-top:4px;background:var(--green2)">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Build 7-Day Practice Plan
+        </button>
+        <button class="analyze-btn" onclick="resetAnalysis()" style="margin-top:8px;background:transparent;border:0.5px solid var(--border2);color:var(--muted)">
+          Analyze Another Swing
+        </button>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="screen" id="tab-practice">
+      <div id="practice-empty" class="empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg></div>
+        <div class="empty-title">No practice plan yet</div>
+        <div class="empty-sub">Analyze your swing first, then tap "Build 7-Day Practice Plan" to get a personalized drill schedule.</div>
+      </div>
+      <div id="practice-loading" style="display:none">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="loading-msg">Building your practice plan...</div>
+          <div class="loading-sub">Designing drills for your specific faults</div>
+        </div>
+      </div>
+      <div id="practice-content" style="display:none">
+        <div class="plan-header">
+          <div class="plan-title">Your 7-Day Plan</div>
+          <div class="plan-sub" id="plan-sub">Personalized for your swing</div>
+        </div>
+        <div id="practice-days"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="screen" id="tab-history">
+      <div id="history-empty" class="empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg></div>
+        <div class="empty-title">No sessions yet</div>
+        <div class="empty-sub">Your swing analyses will appear here so you can track improvement over time.</div>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="tab-settings">
+      <div class="section-label">Api Key</div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Enter your Anthropic API key to power the AI analysis. Your key is stored only on this device.</div>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="settings-key-input" placeholder="sk-ant-..." style="flex:1;background:var(--card2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;font-family:&#39;DM Sans&#39;,sans-serif;color:var(--text);outline:none">
+          <button class="btn-sm" onclick="saveKeyFromSettings()">Save</button>
+        </div>
+        <div id="settings-key-status" style="font-size:12px;margin-top:8px;color:var(--hint)"></div>
+      </div>
+
+      <div class="section-label">About</div>
+      <div class="card">
+        <div style="font-size:13px;color:var(--muted);line-height:1.7">
+          <strong style="color:var(--text)">SwingCoach AI</strong> uses Claude to analyze your swing description and generate personalized coaching. Get your API key at <span style="color:var(--green)">console.anthropic.com</span>.<br><br>
+          <strong style="color:var(--text)">Add to Home Screen:</strong> In Safari, tap the Share button → "Add to Home Screen" to install as an app.
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:16px">Data</div>
+      <div class="card">
+        <button onclick="clearHistory()" style="background:none;border:none;color:var(--red);font-size:13px;font-family:&#39;DM Sans&#39;,sans-serif;cursor:pointer;padding:0">Clear all session history</button>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+</div><!-- /app -->
+
+<!-- DRILL DETAIL MODAL -->
+<div class="modal-overlay" id="drill-modal" onclick="closeDrillModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-sub" id="modal-body"></div>
+    <button class="analyze-btn" onclick="closeDrillModal()">Got it</button>
+  </div>
+</div>
+
+<script>
+// ── State ──
+let apiKey = localStorage.getItem('sc_apikey') || '';
+let selectedClub = 'Driver';
+let lastAnalysis = null;
+let sessions = JSON.parse(localStorage.getItem('sc_sessions') || '[]');
+
+// ── Init ──
+function init() {
+  updateClock();
+  setInterval(updateClock, 30000);
+  if (apiKey) {
+    showKeySet();
+  }
+  renderHistory();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+
+// ── API Key ──
+function saveKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
+    showKeyStatus('key-status', 'Invalid key format', false);
+    return;
+  }
+  apiKey = val;
+  localStorage.setItem('sc_apikey', apiKey);
+  showKeySet();
+}
+
+function saveKeyFromSettings() {
+  const val = document.getElementById('settings-key-input').value.trim();
+  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
+    document.getElementById('settings-key-status').textContent = 'Invalid format — key should start with sk-ant-';
+    document.getElementById('settings-key-status').style.color = 'var(--red)';
+    return;
+  }
+  apiKey = val;
+  localStorage.setItem('sc_apikey', apiKey);
+  document.getElementById('settings-key-status').textContent = 'Key saved!';
+  document.getElementById('settings-key-status').style.color = 'var(--green)';
+  showKeySet();
+}
+
+function showKeySet() {
+  const bar = document.getElementById('api-key-bar');
+  bar.innerHTML = '<span style="font-size:12px;color:var(--green);padding:0 4px">✓ API key saved</span>' +
+    '<button class="btn-sm" style="background:var(--card2);color:var(--muted)" onclick="clearKey()">Change</button>';
+}
+
+function clearKey() {
+  apiKey = '';
+  localStorage.removeItem('sc_apikey');
+  document.getElementById('api-key-bar').innerHTML =
+    '<input type="password" id="api-key-input" placeholder="Paste your Anthropic API key (sk-ant-...)" autocomplete="off" style="flex:1;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;font-family:\'DM Sans\',sans-serif;color:var(--text);outline:none">' +
+    '<button class="btn-sm" onclick="saveKey()">Save</button>' +
+    '<span class="key-status" id="key-status" style="display:none"></span>';
+}
+
+function showKeyStatus(id, msg, ok) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'block';
+  el.textContent = msg;
+  el.className = 'key-status' + (ok ? '' : ' bad');
+}
+
+// ── Tab switching ──
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${t}')"]`).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+// ── Club & chips ──
+function pickClub(el, name) {
+  document.querySelectorAll('.club-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedClub = name;
+}
+
+function toggleChip(el) { el.classList.toggle('active'); }
+
+function appendTip(txt) {
+  const ta = document.getElementById('swing-desc');
+  ta.value = ta.value ? ta.value.trim() + ' ' + txt : txt;
+  ta.focus();
+}
+
+// ── Photo ──
+function handlePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById('photo-preview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── Analysis ──
+async function runAnalysis() {
+  if (!apiKey) { alert('Please add your Anthropic API key first (at the top of the screen or in Settings).'); return; }
+  const desc = document.getElementById('swing-desc').value.trim();
+  const misses = [...document.querySelectorAll('#miss-chips .chip.active')].map(c => c.textContent);
+
+  if (!desc && misses.length === 0) {
+    alert('Please describe your swing or select at least one miss type so the AI can help you.');
+    return;
+  }
+
+  document.getElementById('analyze-form').style.display = 'none';
+  document.getElementById('analyze-loading').style.display = 'block';
+
+  const loadingSteps = [
+    'Reading your swing description',
+    'Identifying swing faults',
+    'Diagnosing root causes',
+    'Building drill recommendations',
+    'Calculating swing score'
+  ];
+  let stepIdx = 0;
+  const stepEl = document.getElementById('loading-sub');
+  const stepInterval = setInterval(() => {
+    stepIdx = (stepIdx + 1) % loadingSteps.length;
+    stepEl.textContent = loadingSteps[stepIdx];
+  }, 1400);
+
+  const photoEl = document.getElementById('photo-preview');
+  const hasPhoto = photoEl.style.display !== 'none' && photoEl.src;
+
+  const prompt = buildAnalysisPrompt(selectedClub, misses, desc, !!hasPhoto);
+
+  try {
+    let messages;
+    if (hasPhoto) {
+      const base64 = photoEl.src.split(',')[1];
+      const mime = photoEl.src.split(';')[0].split(':')[1];
+      messages = [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mime, data: base64 }},
+          { type: 'text', text: prompt }
+        ]
+      }];
+    } else {
+      messages = [{ role: 'user', content: prompt }];
+    }
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages })
+    });
+
+    clearInterval(stepInterval);
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'API error ' + resp.status);
+    }
+
+    const data = await resp.json();
+    const text = data.content.map(b => b.text || '').join('');
+    const parsed = parseAnalysis(text);
+
+    document.getElementById('analyze-loading').style.display = 'none';
+    document.getElementById('analyze-results').style.display = 'block';
+
+    renderAnalysisResults(parsed, selectedClub);
+    lastAnalysis = { club: selectedClub, misses, desc, parsed, date: new Date().toISOString() };
+    saveSession(lastAnalysis);
+    renderHistory();
+
+  } catch(e) {
+    clearInterval(stepInterval);
+    document.getElementById('analyze-loading').style.display = 'none';
+    document.getElementById('analyze-form').style.display = 'block';
+    alert('Error: ' + e.message + '\n\nCheck your API key in Settings.');
+  }
+}
+
+function buildAnalysisPrompt(club, misses, desc, hasPhoto) {
+  const photoBlock = hasPhoto
+    ? `\nIMAGE ANALYSIS — a swing photo is attached. This is your PRIMARY evidence source.\nCarefully examine and report on everything visible:\n- GRIP: hand position, V directions, strong/weak/neutral\n- STANCE: foot width, ball position, knee flex\n- POSTURE: spine angle, hip hinge vs waist bend, chin position\n- ALIGNMENT: shoulder/hip/foot lines — open, closed, or square\n- SWING POSITION: identify which position is shown (address, takeaway, halfway, top, transition, impact, follow-through) then assess:\n    * Club face angle and shaft plane\n    * Lead arm straightness, wrist position (cupped/bowed/flat)\n    * Hip and shoulder rotation and separation amount\n    * Head movement from original address position\n    * Trail elbow — flying or tucked\n    * Weight shift and foot pressure\nBe specific: cite actual body parts and angles you SEE. Prioritize visual evidence over the text description.`
+    : '';
+
+  return \`You are an expert PGA-level golf instructor delivering precise, actionable swing coaching.
+
+CLUB: \${club}
+TYPICAL MISSES: \${misses.length ? misses.join(', ') : 'Not specified'}
+GOLFER DESCRIPTION: \${desc || 'None provided'}\${photoBlock}
+
+Respond ONLY with a valid JSON object. No markdown, no text outside the JSON.
+{
+  "score": <integer 0-100>,
+  "summary": "<2-3 sentences — if photo provided, reference specific things you observed>",
+  "imagePosition": "<if photo: name the swing position shown e.g. Address / Top of Backswing / Impact — omit key if no photo>",
+  "issues": [
+    {
+      "severity": "red|amber|green",
+      "title": "<concise issue name>",
+      "diagnosis": "<2-3 sentences — if photo, cite visuals e.g. your lead wrist appears cupped, your hips are open at impact>",
+      "fix": "<2-3 sentences on the correction and how it should feel>",
+      "drills": ["<drill with reps>", "<drill with reps>", "<drill with reps>"]
+    }
+  ],
+  "strengths": ["<specific strength>", "<specific strength>"],
+  "keyThought": "<one swing thought to take to the range>"
+}
+
+red = major fault killing distance or accuracy. amber = moderate, limits consistency. green = minor refinement. Include 3-5 issues total. If a photo was provided, lead from visual evidence first.\`;
+}
+
+function parseAnalysis(text) {
+  try {
+    const clean = text.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  } catch {
+    return {
+      score: 70,
+      summary: text.substring(0, 200),
+      issues: [{ severity: 'amber', title: 'See full analysis', diagnosis: text, fix: '', drills: [] }],
+      strengths: [],
+      keyThought: ''
+    };
+  }
+}
+
+function renderAnalysisResults(parsed, club) {
+  const score = parsed.score || 70;
+  const circ = 2 * Math.PI * 24;
+  const offset = circ - (score / 100) * circ;
+  const color = score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--red)';
+
+  document.getElementById('score-banner-wrap').innerHTML = `
+    <div class="score-banner">
+      <svg class="score-ring" viewBox="0 0 60 60">
+        <circle cx="30" cy="30" r="24" fill="none" stroke="var(--card2)" stroke-width="4"/>
+        <circle cx="30" cy="30" r="24" fill="none" stroke="${color}" stroke-width="4"
+          stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 30 30)"/>
+        <text x="30" y="27" text-anchor="middle" font-size="14" font-weight="500" fill="${color}" font-family="DM Sans,sans-serif">${score}</text>
+        <text x="30" y="37" text-anchor="middle" font-size="9" fill="var(--hint)" font-family="DM Sans,sans-serif">/100</text>
+      </svg>
+      <div>
+        <div class="score-title">${parsed.imagePosition ? parsed.imagePosition + ' — ' : ''}${club} Swing Analysis</div>
+        <div class="score-summary">${parsed.summary || ''}</div>
+        ${parsed.keyThought ? `<div style="margin-top:7px;font-size:12px;background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.2);border-radius:6px;padding:6px 10px;color:var(--amber)">💭 ${parsed.keyThought}</div>` : ''}
+      </div>
+    </div>`;
+
+  const container = document.getElementById('issue-cards');
+  container.innerHTML = '';
+
+  (parsed.issues || []).forEach(issue => {
+    const card = document.createElement('div');
+    card.className = 'issue-card';
+    const drillsHtml = (issue.drills || []).map(d =>
+      `<span class="drill-tag-dark">${d}</span>`
+    ).join('');
+    card.innerHTML = `
+      <div class="issue-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sev-dot sev-${issue.severity}"></div>
+        <div class="issue-title">${issue.title}</div>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="issue-body">
+        <div class="issue-text"><strong style="color:var(--text)">What's happening:</strong> ${issue.diagnosis}</div>
+        ${issue.fix ? `<div class="issue-text"><strong style="color:var(--text)">The fix:</strong> ${issue.fix}</div>` : ''}
+        ${drillsHtml ? `<div style="margin-top:8px">${drillsHtml}</div>` : ''}
+      </div>`;
+    container.appendChild(card);
+  });
+
+  if ((parsed.strengths || []).length) {
+    const s = document.createElement('div');
+    s.className = 'card2';
+    s.innerHTML = `<div class="section-label" style="margin-bottom:6px">Strengths</div>` +
+      parsed.strengths.map(st => `<div style="font-size:13px;color:var(--muted);padding:3px 0;display:flex;gap:8px"><span style="color:var(--green)">✓</span>${st}</div>`).join('');
+    container.appendChild(s);
+  }
+}
+
+function resetAnalysis() {
+  document.getElementById('analyze-results').style.display = 'none';
+  document.getElementById('analyze-form').style.display = 'block';
+  document.getElementById('swing-desc').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+}
+
+// ── Practice Plan ──
+async function buildPracticePlan() {
+  if (!lastAnalysis) return;
+  switchTab('practice');
+  document.getElementById('practice-empty').style.display = 'none';
+  document.getElementById('practice-content').style.display = 'none';
+  document.getElementById('practice-loading').style.display = 'block';
+
+  const issueList = (lastAnalysis.parsed.issues || [])
+    .filter(i => i.severity !== 'green')
+    .map(i => `- ${i.title}: ${(i.drills || []).join(', ')}`)
+    .join('\n');
+
+  const prompt = `You are a PGA golf instructor creating a personalized 7-day practice plan.
+
+Club: ${lastAnalysis.club}
+Key faults to fix:
+${issueList}
+
+Create a 7-day plan. Respond ONLY with valid JSON (no markdown):
+{
+  "subtitle": "<one line describing the plan focus>",
+  "days": [
+    {
+      "day": "Day 1",
+      "label": "<session theme>",
+      "time": "<duration like 20 min>",
+      "drills": [
+        { "name": "<drill name>", "desc": "<specific instruction with reps/sets>" }
+      ],
+      "tip": "<one coaching tip for that session>"
+    }
+  ]
+}
+
+Rules:
+- 7 days total, include 1 rest/stretch day
+- Drills should be specific with rep counts and clear instructions
+- Build progressively across the week
+- Mix range work with at-home practice`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+    });
+
+    const data = await resp.json();
+    const text = data.content.map(b => b.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const plan = JSON.parse(clean);
+
+    document.getElementById('practice-loading').style.display = 'none';
+    document.getElementById('practice-content').style.display = 'block';
+    document.getElementById('plan-sub').textContent = plan.subtitle || '';
+
+    const container = document.getElementById('practice-days');
+    container.innerHTML = '';
+    (plan.days || []).forEach(day => {
+      const card = document.createElement('div');
+      card.className = 'day-card';
+      const drillsHtml = (day.drills || []).map((d, i) => `
+        <div class="drill-row">
+          <div class="drill-num">${i+1}</div>
+          <div>
+            <div class="drill-name">${d.name}</div>
+            <div class="drill-desc">${d.desc}</div>
+          </div>
+        </div>`).join('');
+      card.innerHTML = `
+        <div class="day-header" onclick="this.parentElement.classList.toggle('open')">
+          <div class="day-left">
+            <div class="day-badge">${day.day.replace('Day ','D')}</div>
+            <div>
+              <div class="day-name">${day.label}</div>
+              <div class="day-time">${day.time}</div>
+            </div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="day-body">
+          ${drillsHtml}
+          ${day.tip ? `<div class="tip-box"><div class="tip-icon">★</div><div class="tip-text">${day.tip}</div></div>` : ''}
+        </div>`;
+      container.appendChild(card);
+    });
+
+    const saved = JSON.parse(localStorage.getItem('sc_sessions') || '[]');
+    if (saved.length > 0) {
+      saved[0].plan = plan;
+      localStorage.setItem('sc_sessions', JSON.stringify(saved));
+    }
+
+  } catch(e) {
+    document.getElementById('practice-loading').style.display = 'none';
+    document.getElementById('practice-empty').style.display = 'block';
+    alert('Could not build practice plan: ' + e.message);
+  }
+}
+
+// ── History ──
+function saveSession(s) {
+  sessions.unshift({ ...s, id: Date.now() });
+  if (sessions.length > 20) sessions = sessions.slice(0, 20);
+  localStorage.setItem('sc_sessions', JSON.stringify(sessions));
+}
+
+function renderHistory() {
+  sessions = JSON.parse(localStorage.getItem('sc_sessions') || '[]');
+  const empty = document.getElementById('history-empty');
+  const list = document.getElementById('history-list');
+  if (!sessions.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = sessions.map(s => {
+    const score = s.parsed?.score || '—';
+    const cls = score >= 75 ? 'h-green' : 'h-amber';
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    return `<div class="history-item" onclick="viewSession('${s.id}')">
+      <div class="history-score ${cls}">${score}</div>
+      <div class="history-info">
+        <div class="history-title">${s.club} — ${(s.misses||[]).slice(0,2).join(', ') || 'Analysis'}</div>
+        <div class="history-sub">${dateStr}</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" class="history-arrow" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  }).join('');
+}
+
+function viewSession(id) {
+  const s = sessions.find(x => String(x.id) === String(id));
+  if (!s) return;
+  lastAnalysis = s;
+  resetAnalysis();
+  document.getElementById('analyze-form').style.display = 'none';
+  document.getElementById('analyze-results').style.display = 'block';
+  renderAnalysisResults(s.parsed, s.club);
+  switchTab('analyze');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all session history?')) return;
+  sessions = [];
+  localStorage.removeItem('sc_sessions');
+  renderHistory();
+}
+
+// ── Modal ──
+function showDrillModal(name, desc) {
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-body').textContent = desc;
+  document.getElementById('drill-modal').classList.add('open');
+}
+
+function closeDrillModal(e) {
+  if (!e || e.target === document.getElementById('drill-modal') || e.currentTarget.tagName === 'BUTTON')
+    document.getElementById('drill-modal').classList.remove('open');
+}
+
+init();
+</script>
+
+
+</body></html>
